@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>The Document Object</h1>
+<h2>The getElementById() Method</h2>
+
+
+<button onclick="myFunction()">Nev</button>
+<button onclick="myRed()">Red</button>
+<button onclick="myGreen()">Green</button>
+<button onclick="myRoger()">Roger!</button>
+
+<script>
+    nev = prompt("Kérem a neved!");
+    szam = parseInt(prompt("Kérek egy számot!"))
+    for(i=0;i<szam;i++)
+    {
+        document.write('<h1 id="nev'+i+'">');
+        document.write(nev);
+        document.write('</h1>');
+        console.log(nev);
+    }
+//    alert(nev);
+
+    function myFunction()
+    {
+        for(i=0;i<szam;i++)
+        {
+            curid = 'nev'+i;
+            //console.log(curid);
+            document.getElementById(curid).innerHTML = nev;
+            document.getElementById(curid).style.color = "black";
+        }
+    }
+    function myRoger()
+    {
+        for(i=0;i<szam;i++)
+        {
+            curid = 'nev'+i;
+            //console.log(curid);
+            document.getElementById(curid).innerHTML = "Roger! Roger!";
+            document.getElementById(curid).style.color = "black";
+        }
+    }
+    function myRed()
+    {
+        for(i=0;i<szam;i++)
+        {
+            curid = 'nev'+i;
+            //console.log(curid);
+            document.getElementById(curid).style.color = "rgb("+(i*20)+","+(i*20)+","+(i*20)+")";
+        }
+    }
+    function myGreen()
+    {
+        for(i=0;i<szam;i++)
+        {
+            curid = 'nev'+i;
+            color = "#"+(i*20)+(i*20)+(i*20);
+            console.log(color);
+            document.getElementById(curid).style.color = color;
+        }
+    }
+</script>
+
+</body>
+</html>
