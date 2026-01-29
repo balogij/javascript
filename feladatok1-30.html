@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>       
+        //1. feladat
+        /*
+        nev = prompt("Add meg a neved!");
+        document.writeln("Szia "+nev+"!");
+        */
+        //9.feladat
+        document.write('<h1 id="szamlalo"></h1>');
+        document.write('<h1 id="szamlalo2"></h1>');
+        let delay = 10; // Start with a 1-second delay
+
+        for (let i = 0; i < 1001; i++) {
+            setTimeout(() => {
+                document.getElementById("szamlalo").innerHTML = i;
+            }, delay);
+            if(i<700){
+                setTimeout(() => {
+                document.getElementById("szamlalo2").innerHTML = i+101;
+            }, delay);
+            }
+            delay += 10;
+        }
+    </script>
+</body>
+</html>
