@@ -13,21 +13,40 @@
         document.writeln("Szia "+nev+"!");
         */
         //9.feladat
+        step = 100;
+        document.write('<button onclick="myMinusz()">-</button>');
+        document.write('<h1 id="step"></h1>');
+        document.write('<button onclick="myPlusz()">+</button>');
         document.write('<h1 id="szamlalo"></h1>');
         document.write('<h1 id="szamlalo2"></h1>');
-        let delay = 10; // Start with a 1-second delay
+        let delay = step; // Start with a 1-second delay
 
-        for (let i = 0; i < 1001; i++) {
+        for (let i = 0; i < 10001; i++) {
             setTimeout(() => {
+                document.getElementById("step").innerHTML = step;
                 document.getElementById("szamlalo").innerHTML = i;
+                console.log(step);
+                console.log(delay);
             }, delay);
             if(i<700){
                 setTimeout(() => {
                 document.getElementById("szamlalo2").innerHTML = i+101;
             }, delay);
             }
-            delay += 10;
+            delay += step;
+            console.log(step);
         }
+
+    function myMinusz()
+    {
+        step-=10;
+        console.log(step);
+    }
+    function myPlusz()
+    {
+        step+=10;
+        console.log(step);
+    }
     </script>
 </body>
 </html>
