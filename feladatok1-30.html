@@ -8,45 +8,123 @@
 <body>
     <script>       
         //1. feladat
-        /*
+        
         nev = prompt("Add meg a neved!");
         document.writeln("Szia "+nev+"!");
-        */
-        //9.feladat
-        step = 100;
-        document.write('<button onclick="myMinusz()">-</button>');
-        document.write('<h1 id="step"></h1>');
-        document.write('<button onclick="myPlusz()">+</button>');
-        document.write('<h1 id="szamlalo"></h1>');
-        document.write('<h1 id="szamlalo2"></h1>');
-        let delay = step; // Start with a 1-second delay
+        
+        //2. feladat
+        document.write('<h3>**********</h3>');
+        document.write('<h3>OOOOOOOOOO</h3>');
+        //3. feladat
+        document.write('<h3>*O*O*O*O*O</h3>');
+        document.write('<h3>*O*O*O*O*O</h3>');
+        //4. feladat
+        //6. feladat
+        //7. feladat
+        //8. feladat
+        document.write('<div>');
+        document.write('<label for="elso">Adja meg az első számot:</label>');
+        document.write('<input type="number" id="elso" name="elso" value=0 onchange="Osszead2()"/></br>');
+        document.write('<label for="masodik">Adja meg a masodik számot:</label>');
+        document.write('<input type="number" id="masodik" name="masodik" value=0 onchange="Osszead2()"/></br>');
+        document.write('<button onclick="Osszead2()">Összeadás</button>');
+        document.write('<button onclick="Kivon()">Kivonás</button>');
+        document.write('<button onclick="Szorzas()">Szorzás</button>');
+        document.write('<button onclick="Osztas()">Osztás</button>');
+        document.write('</br><h3 id="osszeg"></h3>');
+        document.write('</div>');
+        //5. feladat
+        document.write('<div>');
+        document.write('<label for="harmadik">Adja meg a harmadik számot:</label>');
+        document.write('<input type="number" id="harmadik" name="harmadik" value=0 onchange="Osszead3()"/>');
+        document.write('</br><h3 id="osszeg2"></h3>');
+        document.write('</div>');
 
-        for (let i = 0; i < 10001; i++) {
+        //9.feladat
+        let delay = 10; // Start with a 1-second delay
+        document.write('</br><h1 id="szamlalo"></h1>');
+        document.write('</br><h1 id="szamlalo2"></h1>');
+        for (let i = 0; i < 1001; i++) {
             setTimeout(() => {
-                document.getElementById("step").innerHTML = step;
                 document.getElementById("szamlalo").innerHTML = i;
-                console.log(step);
-                console.log(delay);
             }, delay);
+        //10. feladat
             if(i<700){
                 setTimeout(() => {
                 document.getElementById("szamlalo2").innerHTML = i+101;
             }, delay);
             }
-            delay += step;
-            console.log(step);
+            delay += 10;
         }
+        //11. feladat
+        //12. feladat
+        document.write('<div>');
+        document.write('</br><h3 id="szoveg1"></h3>');
+        document.write('</br><h3 id="szoveg2"></h3>');
+        document.write('</div>');
+        let szoveg1 = "";
+        let szoveg2 = "";
+        for (let i = 1; i < 11; i++) {
+            szoveg1 += i + " ";
+            if(i%2==0){
+                szoveg2 += i + " ";
+            }
+        }
+        document.getElementById("szoveg1").innerHTML = "Az első tíz természetes szám:"+szoveg1;
+        document.getElementById("szoveg2").innerHTML = "Az első tíznél kissebb páros szám:"+szoveg2;
+        //13. feladat
+        //14. feladat
+        //15. feladat
+        //16. feladat
+        //17. feladat
+        //18. feladat
 
-    function myMinusz()
+    function Osszead2()
     {
-        step-=10;
-        console.log(step);
+        //alert("value is changed");
+        var elso = parseInt(document.getElementById("elso").value);
+        console.log(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        console.log(document.getElementById("masodik").value);
+        var osszeg = elso+masodik;
+        console.log(osszeg);
+        document.getElementById("osszeg").innerHTML= elso + "+" + masodik + "="+ osszeg;
     }
-    function myPlusz()
+    function Osszead3()
     {
-        step+=10;
-        console.log(step);
+        //alert("value is changed");
+        var elso = parseInt(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        var harmadik = parseInt(document.getElementById("harmadik").value);
+        var osszeg = elso+masodik+harmadik;
+        document.getElementById("osszeg2").innerHTML= elso + "+" + masodik + "+" + harmadik + "="+ osszeg;
     }
+    function Kivon()
+    {
+        var elso = parseInt(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        var osszeg = elso-masodik;
+        document.getElementById("osszeg").innerHTML= elso + "-" + masodik + "="+ osszeg;
+    }
+    function Szorzas()
+    {
+        var elso = parseInt(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        var osszeg = elso*masodik;
+        document.getElementById("osszeg").innerHTML= elso + "*" + masodik + "="+ osszeg;
+    }
+    function Osztas()
+    {
+        var elso = parseInt(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        if(masodik!=0){
+            var osszeg = elso/masodik;
+            document.getElementById("osszeg").innerHTML= elso + "/" + masodik + "="+ osszeg;
+        }
+        else{
+            document.getElementById("osszeg").innerHTML= "Nem lehet nullával osztani!";
+        }
+    }   
     </script>
 </body>
 </html>
