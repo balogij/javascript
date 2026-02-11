@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Párkereső</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 oszlop */
+            gap: 10px;
+            perspective: 1000px; /* A 3D forgatáshoz kell */
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 2.5rem; /* Emoji mérete */
+            backface-visibility: hidden; /* Hogy ne látszódjon a hátoldal tükörképe */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+
+        .front {
+            background-color: #2c3e50;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .back {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            border: 2px solid #2c3e50;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                width: 60px;
+                height: 60px;
+            }
+            .front, .back {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Emoji Párkereső</h1>
+    <div class="game-info">Lépések: <span id="moves">0</span></div>
+    
+    <div class="grid-container" id="game-board">
+        </div>
+
+    <button onclick="restartGame()">Új játék</button>
+
+    <script>
+        const gridContainer = document.getElementById('game-board');
+        const movesDisplay = document.getElementById('moves');
+
+        const emojiList = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊'];
+        
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function initGame() {
+            gridContainer.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            
+            cards = [...emojiList, ...emojiList]; 
+            shuffle(cards);
+
+            cards.forEach(emoji => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.dataset.emoji = emoji;
+
+                cardElement.innerHTML = `
+                    <div class="front">❓</div>
+                    <div class="back">${emoji}</div>
+                `;
+
+                cardElement.addEventListener('click', flipCard);
+                gridContainer.appendChild(cardElement);
+            });
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            incrementMoves();
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+
+            matchedPairs++;
+            resetBoard();
+
+            if (matchedPairs === emojiList.length) {
+                setTimeout(() => alert(`Gratulálok! Nyertél ${moves} lépésből!`), 500);
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        function incrementMoves() {
+            moves++;
+            movesDisplay.innerText = moves;
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+
+        initGame();
+
+    </script>
+</body>
+</html>

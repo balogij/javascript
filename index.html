@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Üsd le a pockot!</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #2c3e50;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: none; /* Elrejtjük az eredeti kurzort */
+        }
+
+        h1 { color: white; margin-bottom: 10px; }
+        .score-board { color: #f1c40f; font-size: 2rem; margin-bottom: 20px; }
+
+        /* A 3x3-as rács */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 160px);
+            grid-template-rows: repeat(3, 160px);
+            gap: 15px;
+            background-color: #1a252f;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+        }
+
+        .hole {
+            background-color: #34495e;
+            border-radius: 50%;
+            border: 8px solid #2c3e50;
+            position: relative;
+            overflow: hidden; /* Hogy a pocok alulról bújhasson elő */
+        }
+
+        /* A pocok stílusa */
+        .mole {
+            position: absolute;
+            top: 100%; /* Alapból a lyuk alatt van */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            transition: top 0.15s ease-out;
+            user-select: none;
+            cursor: none;
+        }
+
+        /* Amikor a pocok kint van */
+        .mole.up {
+            top: 20%;
+        }
+
+        /* Az egyedi kalapács kurzor */
+        #hammer {
+            position: fixed;
+            font-size: 60px;
+            pointer-events: none;
+            z-index: 100;
+            transition: transform 0.05s;
+            transform-origin: bottom left;
+        }
+
+        #hammer.hit {
+            transform: rotate(-45deg);
+        }
+
+        .start-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Üsd le a pockot!</h1>
+    <div class="score-board">Pontszám: <span id="score">0</span></div>
+
+    <div class="game-grid" id="grid">
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+        <div class="hole"><div class="mole">🐹</div></div>
+    </div>
+
+    <button class="start-btn" id="start-btn">Játék Indítása</button>
+
+    <div id="hammer">🔨</div>
+
+<script>
+    const holes = document.querySelectorAll('.hole');
+    const moles = document.querySelectorAll('.mole');
+    const scoreDisplay = document.getElementById('score');
+    const startBtn = document.getElementById('start-btn');
+    const hammer = document.getElementById('hammer');
+
+    let score = 0;
+    let lastHole;
+    let timeUp = false;
+    let moleSpeed = 1000; // Kezdő sebesség (1 másodperc)
+
+    // 1. Kalapács mozgatása
+    window.addEventListener('mousemove', (e) => {
+        hammer.style.top = e.clientY + 'px';
+        hammer.style.left = e.clientX + 'px';
+    });
+
+    // Kalapács ütés animáció
+    window.addEventListener('mousedown', () => hammer.classList.add('hit'));
+    window.addEventListener('mouseup', () => hammer.classList.remove('hit'));
+
+    // 2. Véletlenszerű lyuk választása
+    function randomHole(holes) {
+        const idx = Math.floor(Math.random() * holes.length);
+        const hole = holes[idx];
+        if (hole === lastHole) return randomHole(holes);
+        lastHole = hole;
+        return hole;
+    }
+
+    // 3. Pocok megjelenítése
+    function peep() {
+        const time = moleSpeed;
+        const hole = randomHole(holes);
+        const mole = hole.querySelector('.mole');
+        
+        mole.classList.add('up');
+
+        setTimeout(() => {
+            mole.classList.remove('up');
+            // Ahogy telik az idő, gyorsul a játék (min. 300ms)
+            if (moleSpeed > 300) moleSpeed -= 15; 
+            if (!timeUp) peep();
+        }, time);
+    }
+
+    // 4. Pontszerzés
+    function bonk(e) {
+        if(!e.isTrusted) return; // Csalás elleni védelem
+        score++;
+        this.classList.remove('up');
+        scoreDisplay.textContent = score;
+        
+        // Vizuális visszajelzés az ütésről
+        this.textContent = '💥';
+        setTimeout(() => this.textContent = '🐹', 200);
+    }
+
+    function startGame() {
+        score = 0;
+        scoreDisplay.textContent = 0;
+        timeUp = false;
+        moleSpeed = 1000;
+        startBtn.style.display = 'none';
+        peep();
+        
+        // 30 másodpercig tart egy kör
+        setTimeout(() => {
+            timeUp = true;
+            startBtn.style.display = 'block';
+            startBtn.textContent = 'Újraindítás';
+            alert('Vége a játéknak! Elért pontszám: ' + score);
+        }, 30000);
+    }
+
+    moles.forEach(mole => mole.addEventListener('click', bonk));
+    startBtn.addEventListener('click', startGame);
+
+</script>
+</body>
+</html>
