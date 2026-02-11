@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            background-color: #1a252f;
+            border: 5px solid #1a252f;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }   
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #27ae60;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }        
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+</body>
+<script>
+    const boardElement = document.getElementById('board');
+    let board = [];
+
+    function drawBoard() {
+        boardElement.innerHTML = '';
+
+        for (let r = 0; r < 5; r++) 
+        {
+            for (let c = 0; c < 5; c++) 
+            {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onclick = () => handleMove(r,c);
+                
+                const text = document.createElement('b');
+                text.innerHTML = "0";
+                text.id = "text"+r+c;
+                cell.appendChild(text);
+
+                boardElement.appendChild(cell);
+            }
+        }
+    }
+
+    function handleMove(r,c)
+    {
+        id = "text"+r+c;
+        const text = document.getElementById(id);
+        var szamlalo = parseInt(text.innerHTML());
+        
+        text.innerHTML() = szamlalo+1;
+    }
+
+    function initBoard() {
+        board = Array(5).fill().map(() => Array(5).fill(0));
+        drawBoard();
+    }
+    initBoard();    
+</script>
+</html>
