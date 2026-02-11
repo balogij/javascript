@@ -1,11 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Pattogó Labda Animáció</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 1200px;
+            height: 400px;
+            overflow: hidden;
+            border: 2px solid #444;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .button-container {
+            margin-top: 30px; /* Távolság a játékmezőtől */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .background-layer {
+            position: absolute;
+            display: flex;
+            width: 2400px; /* bg1 + bg2 */
+            height: 400px;
+        }
+
+        .bg-img {
+            width: 1200px;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        #ball {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #shadow {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
-    
+
+<div id="game-container">
+    <div id="bg-track" class="background-layer">
+        <img src="bg1.png" class="bg-img" alt="háttér 1">
+        <img src="bg2.png" class="bg-img" alt="háttér 2">
+    </div>
+    <div id="bg-track-2" class="background-layer" style="left: 2400px;">
+        <img src="bg1.png" class="bg-img" alt="háttér 1">
+        <img src="bg2.png" class="bg-img" alt="háttér 2">
+    </div>
+
+    <img src="arnyek.png" id="shadow" alt="arnyek">
+    <img src="labda.png" id="ball" alt="labda">
+</div>
+<div class="button-container">
+    <button onclick="Start()">Start</button>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const ballImg = document.getElementById('ball');
+    const shadowImg = document.getElementById('shadow');
+    const bgTrack1 = document.getElementById('bg-track');
+    const bgTrack2 = document.getElementById('bg-track-2');
+
+    const width = 1200;
+    const height = 400;
+    const ballSize = 80;
+    const scrollSpeed = 2; 
+
+    let posX = 100;
+    let posY = 0;
+    let vx = 1.0;         
+    let vy = 0;         
+    let gravity = 0.25;
+    let bounce = 0.9;   
+    let friction = 0.9; 
+
+    let startTime = Date.now();
+    const settleDuration = 30000; 
+
+    let animated = true;
+
+    function animate() 
+    {
+        const elapsed = Date.now() - startTime;
+        if(animated == true)
+        {
+            let b1Left = parseFloat(bgTrack1.style.left || 0) - scrollSpeed;
+            let b2Left = parseFloat(bgTrack2.style.left || 2400) - scrollSpeed;
+
+            if (b1Left <= -2400) b1Left = 2400;
+            if (b2Left <= -2400) b2Left = 2400;
+
+            bgTrack1.style.left = b1Left + 'px';
+            bgTrack2.style.left = b2Left + 'px';
+
+            if (elapsed < settleDuration) {
+                const factor = 1 - (elapsed / settleDuration);
+                currentBounce = bounce * factor;
+            } else {
+                currentBounce = 0;
+                vy = 0;
+            }
+
+            vy += gravity;
+            posX += vx;
+            posY += vy;
+
+            if (posY + ballSize > height - 150) 
+            {
+                posY = height - 150 - ballSize;
+                vy *= -currentBounce;
+                
+                if (currentBounce < 0.05) {
+                    vy = 0;
+                    vx *= friction;
+                }
+            }
+
+            if (posX + ballSize > width) 
+            {
+                animated = false;
+            }
+
+            let rotation = (posX % 360) * 2;
+            ballImg.style.transform = `translate(${posX}px, ${posY}px) rotate(${rotation}deg)`;
+            shadowImg.style.transform = `translate(${posX}px, 180px)`;
+
+            requestAnimationFrame(animate);
+        }
+    }
+
+    function Start()
+    {
+        posX = 100;
+        posY = 0;
+        vx = 1.0;         
+        vy = 0;         
+        animated = true;
+        startTime = Date.now();
+        animate();
+    }
+
+    animate();
+</script>
+
 </body>
 </html>
