@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Mágikus Portál Animáció</title>
+
+<style>
+    body {
+        background: #111;
+        color: #ddd;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 40px;
+    }
+
+    #portal {
+        width: 512px;               /* Frame szélesség */
+        height: 512px;              /* Frame magasság */
+        margin: 0 auto;
+        background-repeat: no-repeat;
+        background-size: auto 100%; /* Sprite sheet méretezése */
+        image-rendering: pixelated; /* Ha pixeles sprite-ot használunk */
+        border: 3px solid #444;
+        box-shadow: 0 0 30px rgba(0, 150, 255, 0.5);
+    }
+
+    .info {
+        margin-top: 20px;
+        color: #aaa;
+    }
+</style>
+
+</head>
+<body>
+
+<h1>Mágikus Portál Sprite Animáció</h1>
+
+<div id="portal"></div>
+
+<div class="info">
+    A sprite sheetet betöltve automatikusan elindul az animáció.<br>
+    Jelenleg a rendszer a sprite sheet URL-jét várja.
+</div>
+
+<script>
+// -------------------------------
+//       KONFIGURÁCIÓ
+// -------------------------------
+
+// IDE JÖN MAJD A SPRITE SHEET
+const SPRITE_SHEET_URL = "sprites/portal_spritesheet.png";
+
+// Frame méret (px)
+const FRAME_WIDTH = 512;
+const FRAME_HEIGHT = 512;
+
+// Sprite sheet fázisai
+// (ez megfelel a korábban definiált struktúrának)
+const PHASES = {
+    ripple:   { start: 0,  frames: 6, loop: true,  speed: 120 },
+    vortex:   { start: 6,  frames: 4, loop: false, speed: 90  },
+    compress: { start: 10, frames: 2, loop: false, speed: 120 },
+    burst:    { start: 12, frames: 3, loop: false, speed: 140 }
+};
+
+// -------------------------------
+//       ANIMÁCIÓS MOTOR
+// -------------------------------
+
+const portal = document.getElementById("portal");
+
+// Sprite sheet beállítása
+portal.style.backgroundImage = `url(${SPRITE_SHEET_URL})`;
+
+let currentPhase = "ripple";
+let currentFrame = PHASES[currentPhase].start;
+let lastFrameTime = 0;
+
+function nextPhase() {
+    if (currentPhase === "ripple") currentPhase = "vortex";
+    else if (currentPhase === "vortex") currentPhase = "compress";
+    else if (currentPhase === "compress") currentPhase = "burst";
+    else if (currentPhase === "burst") currentPhase = "ripple"; // ciklus elölről
+}
+
+function animate(timestamp) {
+    const phase = PHASES[currentPhase];
+
+    if (timestamp - lastFrameTime > phase.speed) {
+        lastFrameTime = timestamp;
+
+        // Frame léptetés
+        currentFrame++;
+
+        const endFrame = phase.start + phase.frames - 1;
+
+        if (currentFrame > endFrame) {
+            if (phase.loop) {
+                currentFrame = phase.start;        // újrainduló fázis
+            } else {
+                nextPhase();                       // váltás a következő fázisra
+                currentFrame = PHASES[currentPhase].start;
+            }
+        }
+
+        // Sprite sheet pozíció frissítése
+        portal.style.backgroundPosition =
+            `-${currentFrame * FRAME_WIDTH}px 0`;
+    }
+
+    requestAnimationFrame(animate);
+}
+
+// Animáció indítása
+requestAnimationFrame(animate);
+</script>
+
+</body>
+</html>
+``

@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Amőba – Modern UI + Optimalizált Erős AI</title>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #d7e1ec, #f5f7fa);
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px;
+        color: #333;
+    }
+
+    h1 {
+        font-size: 34px;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    #boardWrapper {
+        background: rgba(255,255,255,0.8);
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    #board {
+        display: grid;
+        grid-template-columns: repeat(15, 42px);
+        grid-template-rows: repeat(15, 42px);
+        gap: 4px;
+    }
+
+    .cell {
+        width: 42px;
+        height: 42px;
+        background: #ffffffd0;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 26px;
+        font-weight: bold;
+        transition: 0.2s ease;
+        user-select: none;
+    }
+
+    .cell:hover {
+        transform: scale(1.15);
+        background: #e4ffe4;
+    }
+
+    .X {
+        color: #d62839;
+        text-shadow: 0 0 6px rgba(214,40,57,0.4);
+    }
+
+    .O {
+        color: #0059b3;
+        text-shadow: 0 0 6px rgba(0,89,179,0.4);
+    }
+</style>
+</head>
+<body>
+
+<h1>Amőba (Gomoku) – Modern UI + Optimalizált AI</h1>
+
+<div id="boardWrapper">
+    <div id="board"></div>
+</div>
+
+<script>
+/*───────────────────────────────────────────
+    1) Tábla inicializálás
+───────────────────────────────────────────*/
+const size = 15;
+let board = [];
+
+function initBoard() {
+    const boardDiv = document.getElementById("board");
+    boardDiv.innerHTML = "";
+    board = [];
+
+    for (let r = 0; r < size; r++) {
+        board[r] = [];
+        for (let c = 0; c < size; c++) {
+            board[r][c] = "_";
+
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.dataset.r = r;
+            cell.dataset.c = c;
+            cell.onclick = handlePlayerMove;
+
+            boardDiv.appendChild(cell);
+        }
+    }
+}
+
+initBoard();
+
+/*───────────────────────────────────────────
+    2) Szomszéd-ellenőrzés (AI optimalizálás)
+───────────────────────────────────────────*/
+function hasNeighbor(r, c) {
+    for (let dr = -2; dr <= 2; dr++) {
+        for (let dc = -2; dc <= 2; dc++) {
+
+            if (dr === 0 && dc === 0) continue;
+
+            let rr = r + dr;
+            let cc = c + dc;
+
+            if (rr >= 0 && rr < size && cc >= 0 && cc < size) {
+                if (board[rr][cc] !== "_") return true;
+            }
+        }
+    }
+    return false;
+}
+
+/*───────────────────────────────────────────
+    3) Győzelem ellenőrzése
+───────────────────────────────────────────*/
+function checkWin(r, c, player) {
+
+    function countDir(dr, dc) {
+        let count = 1;
+
+        // előre
+        let rr = r + dr, cc = c + dc;
+        while (rr >= 0 && rr < size && cc >= 0 && cc < size &&
+               board[rr][cc] === player) {
+            count++;
+            rr += dr;
+            cc += dc;
+        }
+
+        // vissza
+        rr = r - dr; cc = c - dc;
+        while (rr >= 0 && rr < size && cc >= 0 && cc < size &&
+               board[rr][cc] === player) {
+            count++;
+            rr -= dr;
+            cc -= dc;
+        }
+
+        return count;
+    }
+
+    return (
+        countDir(1, 0) >= 5 ||
+        countDir(0, 1) >= 5 ||
+        countDir(1, 1) >= 5 ||
+        countDir(1, -1) >= 5
+    );
+}
+
+/*───────────────────────────────────────────
+    4) Heurisztikus értékelés
+───────────────────────────────────────────*/
+const PATTERN_SCORES = {
+    five:       10000000,
+    open_four:  10000,
+    four:        5000,
+    open_three:  1000,
+    three:        300,
+    open_two:      50,
+    two:           10
+};
+
+function evaluateLine(line, player) {
+    const opp = player === "X" ? "O" : "X";
+    const txt = line.replaceAll(opp, "B");
+    let s = 0;
+
+    if (txt.includes(player.repeat(5))) s += PATTERN_SCORES.five;
+    if (txt.includes("_" + player.repeat(4) + "_")) s += PATTERN_SCORES.open_four;
+    if (txt.includes(player.repeat(4) + "_") || txt.includes("_" + player.repeat(4))) s += PATTERN_SCORES.four;
+    if (txt.includes("_" + player.repeat(3) + "_")) s += PATTERN_SCORES.open_three;
+    if (txt.includes(player.repeat(3) + "__") || txt.includes("__" + player.repeat(3))) s += PATTERN_SCORES.three;
+    if (txt.includes("_" + player.repeat(2) + "_")) s += PATTERN_SCORES.open_two;
+    if (txt.includes(player.repeat(2) + "__") || txt.includes("__" + player.repeat(2))) s += PATTERN_SCORES.two;
+
+    return s;
+}
+
+function evaluateBoard(b, player) {
+    let total = 0;
+
+    // vízszintes
+    for (let r = 0; r < size; r++)
+        total += evaluateLine(b[r].join(""), player);
+
+    // függőleges
+    for (let c = 0; c < size; c++) {
+        let col = "";
+        for (let r = 0; r < size; r++) col += b[r][c];
+        total += evaluateLine(col, player);
+    }
+
+    // átlók ↘
+    for (let d = -(size - 1); d < size; d++) {
+        let diag = "";
+        for (let r = 0; r < size; r++) {
+            let c = r - d;
+            if (c >= 0 && c < size) diag += b[r][c];
+        }
+        if (diag.length >= 5) total += evaluateLine(diag, player);
+    }
+
+    // átlók ↙
+    for (let d = 0; d < 2 * size - 1; d++) {
+        let diag = "";
+        for (let r = 0; r < size; r++) {
+            let c = d - r;
+            if (c >= 0 && c < size) diag += b[r][c];
+        }
+        if (diag.length >= 5) total += evaluateLine(diag, player);
+    }
+
+    return total;
+}
+
+/*───────────────────────────────────────────
+    5) Optimalizált MINIMAX + Alfa‑Béta
+───────────────────────────────────────────*/
+function minimax(depth, alpha, beta, maximizingPlayer) {
+
+    if (depth === 0)
+        return evaluateBoard(board, "O") - evaluateBoard(board, "X");
+
+    if (maximizingPlayer) {
+        let best = -Infinity;
+
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+
+                if (board[r][c] === "_" && hasNeighbor(r, c)) {
+
+                    board[r][c] = "O";
+
+                    if (checkWin(r, c, "O")) {
+                        board[r][c] = "_";
+                        return 99999999;
+                    }
+
+                    let score = minimax(depth - 1, alpha, beta, false);
+                    board[r][c] = "_";
+
+                    best = Math.max(best, score);
+                    alpha = Math.max(alpha, best);
+                    if (beta <= alpha) return best;
+                }
+            }
+        }
+        return best;
+
+    } else {
+        let best = +Infinity;
+
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+
+                if (board[r][c] === "_" && hasNeighbor(r, c)) {
+
+                    board[r][c] = "X";
+
+                    if (checkWin(r, c, "X")) {
+                        board[r][c] = "_";
+                        return -99999999;
+                    }
+
+                    let score = minimax(depth - 1, alpha, beta, true);
+                    board[r][c] = "_";
+
+                    best = Math.min(best, score);
+                    beta = Math.min(beta, best);
+                    if (beta <= alpha) return best;
+                }
+            }
+        }
+        return best;
+    }
+}
+
+/*───────────────────────────────────────────
+    6) AI lépéskeresés (optimalizált)
+───────────────────────────────────────────*/
+function aiMove() {
+    let bestScore = -Infinity;
+    let bestMove = null;
+
+    const DEPTH = 2; // gyors gépen 3 is lehet
+
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+
+            if (board[r][c] === "_" && hasNeighbor(r, c)) {
+
+                board[r][c] = "O";
+
+                if (checkWin(r, c, "O")) {
+                    board[r][c] = "_";
+                    return place(r, c, "O");
+                }
+
+                let score = minimax(DEPTH, -Infinity, +Infinity, false);
+                board[r][c] = "_";
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = { r, c };
+                }
+            }
+        }
+    }
+
+    if (bestMove)
+        place(bestMove.r, bestMove.c, "O");
+}
+
+/*───────────────────────────────────────────
+    7) Lépéskezelés (ember + AI)
+───────────────────────────────────────────*/
+function handlePlayerMove(e) {
+    const r = +e.target.dataset.r;
+    const c = +e.target.dataset.c;
+
+    if (board[r][c] !== "_") return;
+
+    if (place(r, c, "X")) return;
+
+    setTimeout(aiMove, 120);
+}
+
+function place(r, c, player) {
+    board[r][c] = player;
+
+    const index = r * size + c;
+    const cell = document.querySelectorAll(".cell")[index];
+    cell.classList.add(player);
+    cell.textContent = player;
+
+    if (checkWin(r, c, player)) {
+        setTimeout(() => alert(player + " nyert!"), 150);
+        document.querySelectorAll(".cell").forEach(c => c.onclick = null);
+        return true;
+    }
+
+    return false;
+}
+
+</script>
+</body>
+</html>

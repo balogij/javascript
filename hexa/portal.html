@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Fantasy Portál – Arany Sprite Sheet + Debug Panel</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #000;
+        color: #ddd;
+        font-family: Arial, sans-serif;
+        user-select: none;
+    }
+
+    #scene {
+        width: 1600px;
+        height: 900px;
+        margin: 0 auto;
+        background-image: url("fantasy_portal_background.png");
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    #portal {
+        position: absolute;
+        left: 545px;
+        top: 155px;
+        width: 512px;
+        height: 512px;
+        background-repeat: no-repeat;
+        background-size: auto 100%;
+        pointer-events: none;
+        image-rendering: crisp-edges;
+    }
+
+    /* Debug panel */
+    #debug-panel {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: rgba(20, 20, 20, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #444;
+        font-size: 14px;
+        width: 250px;
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+    }
+
+    #debug-panel button {
+        width: 100%;
+        margin-top: 6px;
+        padding: 6px;
+        background: #333;
+        color: #ddd;
+        border: 1px solid #666;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 0.2s;
+    }
+
+    #debug-panel button:hover {
+        background: #555;
+    }
+</style>
+
+</head>
+<body>
+
+<div id="scene">
+    <div id="portal"></div>
+</div>
+
+<div id="debug-panel">
+    <div><b>Fázis:</b> <span id="phaseText">–</span></div>
+    <div><b>Frame:</b> <span id="frameText">–</span></div>
+    <div><b>Sebesség:</b> <span id="speedText">–</span> ms</div>
+
+    <button id="toggleBtn">⏸ Megállítás</button>
+    <button id="burstBtn">💥 Burst indítása</button>
+</div>
+
+<script>
+// --- CONFIG ---
+const SPRITE_SHEET_URL = "sprite_sheet.png";
+
+const FRAME_WIDTH = 1024;
+const FRAME_HEIGHT = 1024;
+
+const PHASES = {
+    ripple:   { start: 0,  frames: 6, loop: true,  speed: 120 },
+    vortex:   { start: 6,  frames: 4, loop: false, speed: 90  },
+    compress: { start: 10, frames: 2, loop: false, speed: 120 },
+    burst:    { start: 12, frames: 3, loop: false, speed: 140 }
+};
+
+// --- DOM ---
+const portal = document.getElementById("portal");
+const phaseText = document.getElementById("phaseText");
+const frameText = document.getElementById("frameText");
+const speedText = document.getElementById("speedText");
+const toggleBtn = document.getElementById("toggleBtn");
+const burstBtn = document.getElementById("burstBtn");
+
+portal.style.backgroundImage = `url(${SPRITE_SHEET_URL})`;
+
+let currentPhase = "ripple";
+let currentFrame = PHASES[currentPhase].start;
+let lastFrameTime = 0;
+let isPlaying = true;
+
+// --- FUNCTIONS ---
+function nextPhase() {
+    if (currentPhase === "ripple") currentPhase = "vortex";
+    else if (currentPhase === "vortex") currentPhase = "compress";
+    else if (currentPhase === "compress") currentPhase = "burst";
+    else if (currentPhase === "burst") currentPhase = "ripple";
+}
+
+function triggerBurst() {
+    currentPhase = "burst";
+    currentFrame = PHASES.burst.start;
+}
+
+burstBtn.onclick = triggerBurst;
+
+toggleBtn.onclick = () => {
+    isPlaying = !isPlaying;
+    toggleBtn.textContent = isPlaying ? "⏸ Megállítás" : "▶ Folytatás";
+};
+
+function animate(timestamp) {
+    if (isPlaying) {
+        const phase = PHASES[currentPhase];
+
+        if (timestamp - lastFrameTime > phase.speed) {
+            lastFrameTime = timestamp;
+
+            currentFrame++;
+            const endFrame = phase.start + phase.frames - 1;
+
+            if (currentFrame > endFrame) {
+                if (phase.loop) {
+                    currentFrame = phase.start;
+                } else {
+                    nextPhase();
+                    currentFrame = PHASES[currentPhase].start;
+                }
+            }
+
+            portal.style.backgroundPosition =
+                `-${currentFrame * FRAME_WIDTH}px 0`;
+        }
+    }
+
+    // Debug panel frissítés
+    phaseText.textContent = currentPhase;
+    frameText.textContent = currentFrame;
+    speedText.textContent = PHASES[currentPhase].speed;
+
+    requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+</script>
+
+</body>
+</html>

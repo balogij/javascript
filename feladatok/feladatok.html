@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feladatok</title>
+</head>
+<body>
+    <script>       
+        //8. feladat
+        document.write('<div>');
+        document.write('<label for="elso">Adja meg az első számot:</label>');
+        document.write('<input type="number" id="elso" name="elso" value=0 onchange="Osztas()"/></br>');
+        document.write('<label for="masodik">Adja meg a masodik számot:</label>');
+        document.write('<input type="number" id="masodik" name="masodik" value=0 onchange="Osztas()"/></br>');
+        document.write('<button onclick="Osztas()">Osztás</button>');
+        document.write('</br><h3 id="osszeg"></h3>');
+        document.write('</div>');
+
+        //10. feladat
+        let delay = 10; 
+        document.write('</br><h1 id="szamlalo"></h1>');
+        for (let i = 100; i < 801; i++) 
+		{
+                setTimeout(() => {
+                document.getElementById("szamlalo").innerHTML = i;
+            }, delay);
+            delay += 10;
+        }
+        //11. feladat
+        //12. feladat
+        document.write('<div>');
+        document.write('</br><h3 id="szoveg1"></h3>');
+        document.write('</br><h3 id="szoveg2"></h3>');
+        document.write('</div>');
+        let szoveg1 = "";
+        let szoveg2 = "";
+        for (let i = 1; i < 11; i++) {
+            szoveg1 += i + " ";
+            if(i%2==0){
+                szoveg2 += i + " ";
+            }
+        }
+        document.getElementById("szoveg1").innerHTML = "Az első tíz természetes szám:"+szoveg1;
+        document.getElementById("szoveg2").innerHTML = "Az első tíznél kissebb páros szám:"+szoveg2;
+		
+		//20. feladat
+        document.write('<div>');
+        document.write('</br><h3 id="paros"></h3>');
+        document.write('</div>');
+        let paros_str = "";
+
+		for(let i=50;i>9;i--)
+		{
+			if(i%2==0)
+			{
+				paros_str += i + ", "; 
+			}
+		}
+		document.getElementById("paros").innerHTML = "A páros számok 50-től 10-ig:"+paros_str;
+
+    function Osztas()
+    {
+        var elso = parseInt(document.getElementById("elso").value);
+        var masodik = parseInt(document.getElementById("masodik").value);
+        if(masodik!=0){
+            var osszeg = elso/masodik;
+            document.getElementById("osszeg").innerHTML= elso + "/" + masodik + "="+ osszeg;
+        }
+        else{
+            document.getElementById("osszeg").innerHTML= "Nem lehet nullával osztani!";
+        }
+    }   
+    </script>
+</body>
+</html>

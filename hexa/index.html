@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hexa Taktikai Játék</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="ui">
+    <h2 id="phaseText">🎬 Fázis: Lerakás</h2>
+    <h3 id="playerText">Játékos 1 köre</h3>
+
+    <div id="unitSelector">
+      <button onclick="selectUnit('warrior')">🗡️ Harcos (<span id="cnt-warrior">2</span>)</button>
+      <button onclick="selectUnit('archer')">🏹 Íjász (<span id="cnt-archer">2</span>)</button>
+      <button onclick="selectUnit('priest')">✝️ Pap (<span id="cnt-priest">1</span>)</button>
+      <button onclick="selectUnit('mage')">🔥 Mágus (<span id="cnt-mage">1</span>)</button>
+    </div>
+
+    <p id="statusMsg">👉 Válassz egységet és kattints a saját térfeledre!</p>
+
+    <div id="combatInfo" style="display:none; margin-top: 16px;">
+      <h3>Kör sorrend:</h3>
+      <ul id="turnOrderList"></ul>
+      <button id="skipBtn" onclick="endTurn()">Kör átugrása</button>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas" width="900" height="900"></canvas>
+
+  <script src="game.js"></script>
+</body>
+</html>

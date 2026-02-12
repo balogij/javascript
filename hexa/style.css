@@ -1,0 +1,83 @@
+:root {
+  --panel-bg: rgba(0,0,0,0.7);
+  --panel-blur: 8px;
+  --accent: #fff;
+  --btn-bg: #444;
+  --btn-bg-hover: #666;
+  --border: #555;
+  --canvas-bg: #222;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #121212;
+  color: var(--accent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#ui {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 20px;
+  background: var(--panel-bg);
+  border-radius: 12px;
+  backdrop-filter: blur(var(--panel-blur));
+  width: 280px;
+  z-index: 10;
+  border: 1px solid var(--border);
+}
+
+#unitSelector button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: var(--accent);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#unitSelector button:hover {
+  background: var(--btn-bg-hover);
+}
+
+#turnOrderList {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+#turnOrderList li {
+  padding: 4px 0;
+  border-bottom: 1px solid #444;
+}
+
+canvas {
+  background: var(--canvas-bg);
+  border: 2px solid var(--border);
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  cursor: crosshair;
+}
+
+#skipBtn {
+  width: 100%;
+  padding: 10px;
+  background: #a55;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
