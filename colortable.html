@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Kattintható színes táblázat</title>
+	<style>
+		.controls {
+		  display: flex;
+		  flex-wrap: wrap;
+		  gap: 10px 14px;
+		  align-items: center;
+		}
+		.field {
+		  display: inline-flex;
+		  flex-direction: column;
+		  gap: 6px;
+		  font-size: 12px;
+		  color: var(--muted);
+		}
+
+	</style>
+</head>
+<body>
+  <header>
+    <h1>Interaktív színezhető táblázat</h1>
+    <div class="controls">
+		<div class="field">
+			<label for="rows">Sorok</label>
+			<input id="rows" type="number" min="1" max="200" value="5" />
+		</div>
+		<div class="field">
+			<label for="cols">Oszlopok</label>
+			<input id="cols" type="number" min="1" max="200" value="5" />		
+		</div>
+		<div class="field">
+		</div>
+		
+		  <button id="build" onclick="generateTable()">Táblázat létrehozása</button>
+		  <button id="reset" onclick="resetTable()">Reset</button>
+
+		<div class="field">
+			<label for="mode">Mód</label>
+			<select id="mode">
+				<option value="sequence">Sorrend</option>
+				<option value="random">Véletlen</option>
+				<option value="toggle">Két szín váltás</option>
+			</select>
+		</div>
+
+    </div>
+	</header>
+	<main>
+	<table id="tablazat">
+	</table>
+	</main>
+<script>
+    const table = document.getElementById("tablazat");
+	
+	var red = 0;
+	var green = 0;
+	var blue = 0;
+
+    function resetTable()
+    {
+		red = 0;
+		green = 0;
+		blue = 0;
+		
+        table.innerHTML = '';
+    }
+    
+	function generateTable()
+	{
+        resetTable();
+
+		let colsNum = parseInt(document.getElementById("cols").value);
+        let rowsNum = parseInt(document.getElementById("rows").value);
+        for(let i=0;i<rowsNum;i++)
+        {
+            const row = document.createElement('tr');
+            table.appendChild(row);
+            for(let j=0;j<colsNum;j++)
+            {
+                const col = document.createElement('td');
+                //col.innerHTML = i+'-'+j;
+				col.width = '50px';
+				col.height = '50px';
+                col.style.backgroundColor = 'rgb('+red+','+green+','+blue+')';
+				col.style.border = '1px solid blue';
+                
+				col.onclick = function () {
+				  changeColor(this);
+				};
+
+                row.appendChild(col);
+            }
+        }
+	}
+
+	
+	function changeColor(element)
+	{
+		var mode = document.getElementById("mode").value;
+		
+		if(mode == "sequence")
+		{
+			if(red<256)
+			{
+				red += 64;
+			}
+			else if(green<256)
+			{
+				green += 64;
+			}
+			else if(blue<256)
+			{
+				blue += 64;
+			}
+			else
+			{
+				red = 0;
+				green = 0;
+				blue = 0;
+			}
+			
+			element.style.backgroundColor = 'rgb('+red+','+green+','+blue+')';
+		}
+		else if (mode == "random")
+		{
+			red = getRandomInt(0,256);
+			green = getRandomInt(0,256);
+			blue = getRandomInt(0,256);
+			
+			element.style.backgroundColor = 'rgb('+red+','+green+','+blue+')';
+		}
+		else if(mode == "toggle")
+		{
+			if(element.style.backgroundColor == 'red')
+			{
+				element.style.backgroundColor = 'green';
+			}
+			else if(element.style.backgroundColor == 'green')
+			{
+				element.style.backgroundColor = 'red';
+			}
+			else
+			{
+				element.style.backgroundColor = 'green';
+			}
+		}
+	}
+	
+	function getRandomInt(min, max) 
+	{
+		const minCeil = Math.ceil(min);
+		const maxFloor = Math.floor(max);
+		return Math.floor(Math.random() * (maxFloor - minCeil)) + minCeil;
+	}
+	
+    generateTable();
+
+</script>
+</body>
+</html>
