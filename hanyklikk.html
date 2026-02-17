@@ -58,13 +58,12 @@
     {
         id = "text"+r+c;
         const text = document.getElementById(id);
-        var szamlalo = parseInt(text.innerHTML());
+        var szamlalo = parseInt(text.innerHTML);
         
-        text.innerHTML() = szamlalo+1;
+        text.innerHTML = szamlalo+1;
     }
 
     function initBoard() {
-        board = Array(5).fill().map(() => Array(5).fill(0));
         drawBoard();
     }
     initBoard();    
