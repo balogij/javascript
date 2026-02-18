@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html  lang="hu">
+
+<head>
+<title>Adatok feltöltése</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+<script>
+function myFunction(){
+    var x = document.getElementById("myFile");
+    var txt = "";
+    if ('files' in x) {
+        if (x.files.length == 0) {
+            txt = "Válassz ki egy fájlt.";
+        } else {
+			var file = x.files[0];
+			if ('name' in file) {
+				txt += "fájl neve: " + file.name + "<br>";
+			}
+			if ('size' in file) {
+				txt += "fájl mérete: " + file.size + " bájt <br>";
+			}
+			
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var text = reader.result;
+				document.getElementById("szoveg").value = text;
+			}
+			reader.readAsText(file, "utf-8");
+        }
+    } 
+    else {
+        if (x.value == "") {
+            txt += "Válassz ki egy fájlt.";
+        } else {
+            txt += "A böngésző nem támogatja ezt a funkciót!";
+            txt  += "<br>A fájl elérés útvonala: " + x.value; // Ha a böngésző nem támogatja ezt a funkciót, akkor a fájl elérési útvonalát adja vissza. 
+        }
+    }
+    document.getElementById("szoveg").value = txt;
+}
+
+
+function SaveFile(filename, type)
+{
+    var data = getElementById("szoveg").value;
+    console.log(data);
+	var a = document.createElement("a");
+	var file = new Blob([data], {type: type});
+	if (window.navigator.msSaveOrOpenBlob) // IE10+
+		window.navigator.msSaveOrOpenBlob(file, filename);
+	else { // Others
+		var url = URL.createObjectURL(file);
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+}
+</script>
+</head>
+
+<body onload="myFunction()">
+
+<input type="file" id="myFile" onchange="myFunction()">
+<button onclick="SaveFile('myfilename.txt', 'text/plain')">Fájl mentése</button>
+
+<p id="demo"></p>
+
+<p id='data'></p>
+
+<textarea id="szoveg" rows="20" cols="50" style="overflow: auto;"></textarea>
+
+
+</body>
+</html>
