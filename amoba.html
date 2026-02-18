@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            background-color: #1a252f;
+            border: 5px solid #1a252f;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }   
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #27ae60;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }        
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+	<button id="reset" onclick="drawBoard()">Reset</button>
+	<h3 id="jatekos"></h3>
+</body>
+<script>
+	var klikk = 0;
+	var vege = false;
+	var player = "X játékos";
+	const turn = document.getElementById('jatekos');
+	turn.innerHTML = player;
+    const boardElement = document.getElementById('board');
+    let tabla = [];
+
+	function nyert(r,c,t)
+	{
+		let otegyforma = t+t+t+t+t;
+		let otegyforma_1 = "";
+		let otegyforma_2 = "";
+		let otegyforma_3 = "";
+		let otegyforma_4 = "";
+		for(let i=0;i<5;i++)
+		{
+			otegyforma_1 += tabla[r][i];
+			otegyforma_2 += tabla[i][c];
+			otegyforma_3 += tabla[i][i];
+			let n = 4-i;
+			otegyforma_4 += tabla[i][n];
+		}
+		console.log(`JÁTÉKOS: ${t}`);
+		console.log(otegyforma);
+		console.log(otegyforma_1);
+		console.log(otegyforma_2);
+		console.log(otegyforma_3);
+		console.log(otegyforma_4);
+		if(otegyforma_1 == otegyforma || otegyforma_2 == otegyforma || otegyforma_3 == otegyforma || otegyforma_4 == otegyforma)
+		{
+			vege = true;
+			turn.innerHTML = "Az "+t+" JÁTÉKOS NYERT!";
+		}
+	}
+	
+    function drawBoard() 
+	{
+		vege = false;
+		klikk = 0;
+		//player = "X játékos";
+		turn.innerHTML = player;
+		
+        boardElement.innerHTML = '';
+
+        for (let r = 0; r < 5; r++) 
+        {
+            for (let c = 0; c < 5; c++) 
+            {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onclick = () => handleMove(r,c);
+                
+                const text = document.createElement('b');
+                text.innerHTML = "";
+                text.id = "text"+r+c;
+                cell.appendChild(text);
+
+                boardElement.appendChild(cell);
+				
+				tabla[r][c] = "";
+            }
+        }
+    }
+
+	function handleMove(r,c)
+    {
+        const id = "text"+r+c;
+        const textElement = document.getElementById(id);
+		
+		if(vege==false)
+		{
+			if(textElement.innerHTML =="")
+			{
+				if(player=="X játékos")
+				{
+					textElement.innerHTML = "X";
+					tabla[r][c] = "X";
+					nyert(r,c,"X");
+					player = "O játékos";
+					if(vege==false)
+						turn.innerHTML = player;
+				}
+				else if (player == "O játékos")
+				{
+					textElement.innerHTML = "O";
+					tabla[r][c] = "O";
+					nyert(r,c,"O");
+					player = "X játékos";
+					if(vege==false)
+						turn.innerHTML = player;
+				}
+			}
+			klikk++;
+			if(klikk==25)
+				turn.innerHTML = "DÖNTETLEN!";
+		}
+        //console.log(`Cell index: ${r}, ${c}`); 
+    }
+
+    function initBoard() {
+		tabla = Array(5).fill().map(() => Array(5).fill(0));
+		console.log(`tabla: ${tabla}`);
+        drawBoard();
+    }
+    initBoard();    
+</script>
+</html>
