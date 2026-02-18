@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="main">
+        <h3 id="latogato">ttt</h3>
+        <h2 id="kosar">ttt</h2>
+        <button id="alma" onclick="AddKosar('alma')">alma</button>
+        <button id="banán" onclick="AddKosar('banán')">banán</button>
+        <button id="citrom" onclick="AddKosar('citrom')">citrom</button>
+        <button id="narancs" onclick="AddKosar('narancs')">narancs</button>
+        <button id="reset" onclick="reset()">Kosár ürítése</button>
+    </div>
+</body>
+<script>
+    const gyumolcsok = ['alma', 'banán', 'citrom', 'narancs'];
+    const main = document.getElementById('main');
+    const latogato = document.getElementById('latogato');
+    const kosar = document.getElementById('kosar');
+
+    //gyumolcsok.push();
+/*
+    for(let i=0;i<gyumolcsok.length;i++)
+    {
+        let myButton = document.createElement('button');
+        myButton.innerHTML = gyumolcsok[i];
+        myButton.id = gyumolcsok[i];
+        myButton.onclick = () => AddKosar(gyumolcsok[i]);
+        main.appendChild(myButton);
+    }
+*/
+    if(localStorage.kosar)
+    {
+        let items = localStorage.getItem('kosar');
+        //console.log("kosar "+items);
+
+        kosar.innerHTML = items;
+    }
+    else
+    {
+        localStorage.setItem("kosar","A kosarad tartalma: ");
+        kosar.innerHTML= "A kosarad tartalma: ";
+    }
+
+    
+
+    if(localStorage.latogato)
+    {
+        let num_str = localStorage.getItem('latogato');
+        console.log(num_str);
+        let num = parseInt(num_str);
+        console.log(num);
+        num++;
+        localStorage.setItem("latogato",num);
+        latogato.innerHTML="Latogató: "+num;
+    }
+    else
+    {
+        localStorage.setItem("latogato","1");
+        latogato.innerHTML="Latogató: 1";
+    }
+
+    function AddKosar(gyumi)
+    {
+        //console.log(gyumi);
+        let kosar_str = localStorage.getItem('kosar');
+        kosar_str = kosar_str + gyumi+", ";
+        //console.log(kosar_str);
+        localStorage.setItem('kosar',kosar_str);
+
+        kosar.innerHTML= kosar_str;
+    }
+
+    function reset()
+    {
+        //localStorage.setItem("latogato","");
+        localStorage.setItem('kosar',"A kosarad tartalma: ");
+        kosar.innerHTML= "A kosarad tartalma: ";
+        //localStorage.clear();
+    }
+</script>
+</html>
