@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="module">
+</script>
+<h2>Emberek</h2>
+
+
+  <label for="name">Név:</label><br>
+  <input type="text" id="name" name="name" value=""><br>
+  <label for="kor">Kor:</label><br>
+  <input type="text" id="kor" name="kor" value="0"><br><br>
+  <label for="magassag">Magasság:</label><br>
+  <input type="text" id="magassag" name="magassag" value="0"><br><br>
+  <input type="submit" value="Submit" onClick='feladat(document.getElementById("name").value,document.getElementById("kor").value,document.getElementById("magassag").value)'>
+
+<div id="kiir"></div>
+</body>
+</html>
+
+<script>
+
+    var persons=[];
+
+    $.getJSON("./emberek.json", function(json) {
+        // Nincs szükség JSON.parse-ra, a jQuery automatikusan objektummá alakítja!
+         
+        for (let index = 0; index < json.length; index++) {
+            const element = json[index];
+            feladat(element.nev,element.kor,element.magassag);
+        }
+        //console.log(persons);
+    });
+
+    function feladat(nev, kor, magassag) {
+        const person = {
+            nev: nev,
+            kor: parseInt(kor),
+            magassag: parseInt(magassag),
+
+            minden:function()
+            {
+                return "Név:"+this.nev + " Kor:" + this.kor + " Magassága:" +this.magassag;
+            }
+        }
+
+        persons.push(person)
+
+        console.log(persons);
+
+        document.getElementById("kiir").innerHTML="";
+
+        for(i=0;i<persons.length;i++)
+        {
+            const ember = document.createElement('p');
+            ember.innerHTML=persons[i].minden();
+            document.getElementById("kiir").appendChild(ember);
+        }
+    }
+</script>

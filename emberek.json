@@ -1,0 +1,52 @@
+[
+    {
+    "nev": "Kovács Adél",
+    "kor": 28,
+    "magassag": 165
+  },
+  {
+    "nev": "Nagy Márk",
+    "kor": 34,
+    "magassag": 182
+  },
+  {
+    "nev": "Szabó Zsófia",
+    "kor": 22,
+    "magassag": 170
+  },
+  {
+    "nev": "Tóth Bence",
+    "kor": 41,
+    "magassag": 178
+  },
+  {
+    "nev": "Horváth Petra",
+    "kor": 29,
+    "magassag": 163
+  },
+  {
+    "nev": "Varga Tamás",
+    "kor": 52,
+    "magassag": 185
+  },
+  {
+    "nev": "Molnár Eszter",
+    "kor": 19,
+    "magassag": 168
+  },
+  {
+    "nev": "Farkas Dániel",
+    "kor": 31,
+    "magassag": 175
+  },
+  {
+    "nev": "Balogh Lilla",
+    "kor": 26,
+    "magassag": 160
+  },
+  {
+    "nev": "Papp Kristóf",
+    "kor": 37,
+    "magassag": 190
+  }
+]
